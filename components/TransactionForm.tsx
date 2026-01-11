@@ -52,8 +52,8 @@ const TransactionForm: React.FC<TransactionFormProps> = ({ onSave, editingTransa
     const incomeVal = Number(formData.income) || 0;
     const outcomeVal = Number(formData.outcome) || 0;
 
-    if (incomeVal < 0 || outcomeVal < 0) {
-      alert('Nilai uang tidak boleh negatif.');
+    if (incomeVal === 0 && outcomeVal === 0) {
+      alert('Masukkan nilai pemasukan atau pengeluaran.');
       return;
     }
 
@@ -80,133 +80,88 @@ const TransactionForm: React.FC<TransactionFormProps> = ({ onSave, editingTransa
     }));
   };
 
-  const inputContainerClasses = "relative flex items-center";
-  const iconClasses = "absolute left-3 text-slate-400 pointer-events-none";
-  const baseInputClasses = "w-full pl-10 pr-4 py-2.5 bg-slate-50 border border-slate-200 text-slate-900 rounded-xl focus:ring-2 outline-none transition-all duration-200 hover:border-slate-300";
+  const inputClasses = "w-full pl-9 pr-3 py-2 bg-slate-50 border border-slate-200 text-slate-900 rounded-lg focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 outline-none transition-all text-sm";
 
   return (
-    <div className="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden transform transition-all">
-      <div className={`h-1.5 w-full ${editingTransaction ? 'bg-amber-500' : 'bg-blue-600'}`}></div>
-      
-      <div className="p-6">
-        <div className="flex items-center justify-between mb-6">
-          <h2 className="text-xl font-bold text-slate-800 flex items-center gap-2.5">
-            <div className={`p-2 rounded-lg ${editingTransaction ? 'bg-amber-50 text-amber-600' : 'bg-blue-50 text-blue-600'}`}>
-              {editingTransaction ? <Save size={22} /> : <PlusCircle size={22} />}
-            </div>
-            {editingTransaction ? 'Edit Transaksi' : 'Transaksi Baru'}
-          </h2>
-          {editingTransaction && (
-            <span className="px-2.5 py-1 bg-amber-100 text-amber-700 text-[10px] font-black uppercase tracking-wider rounded-md">
-              Mode Edit
-            </span>
+    <div className={`bg-white rounded-2xl shadow-sm border ${editingTransaction ? 'border-amber-200' : 'border-blue-100'} overflow-hidden`}>
+      <div className={`p-4 ${editingTransaction ? 'bg-amber-50/50' : 'bg-blue-50/30'} border-b border-inherit flex items-center justify-between`}>
+        <h2 className="text-sm font-bold text-slate-800 flex items-center gap-2">
+          {editingTransaction ? (
+            <><Save size={16} className="text-amber-600" /> Perbarui Data</>
+          ) : (
+            <><PlusCircle size={16} className="text-blue-600" /> Catat Transaksi Baru</>
           )}
-        </div>
-        
-        <form onSubmit={handleSubmit} className="space-y-5">
-          <div className="grid grid-cols-1 gap-4">
-            <div className="space-y-1.5">
-              <label className="text-xs font-bold text-slate-500 uppercase tracking-tight ml-1">
-                Tanggal Transaksi
-              </label>
-              <div className={inputContainerClasses}>
-                <Calendar size={18} className={iconClasses} />
-                <input
-                  type="date"
-                  name="date"
-                  value={formData.date}
-                  onChange={handleChange}
-                  className={`${baseInputClasses} focus:ring-blue-500/20 focus:border-blue-500`}
-                  required
-                />
-              </div>
-            </div>
-
-            <div className="space-y-1.5">
-              <label className="text-xs font-bold text-slate-500 uppercase tracking-tight ml-1">
-                Keterangan / Deskripsi
-              </label>
-              <div className={inputContainerClasses}>
-                <FileText size={18} className={iconClasses} />
-                <input
-                  type="text"
-                  name="description"
-                  value={formData.description}
-                  onChange={handleChange}
-                  placeholder="Contoh: Belanja Stok Barang"
-                  className={`${baseInputClasses} focus:ring-blue-500/20 focus:border-blue-500`}
-                  required
-                />
-              </div>
-            </div>
-          </div>
-
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 p-4 bg-slate-50/50 rounded-2xl border border-slate-100">
-            <div className="space-y-1.5">
-              <label className="text-xs font-bold text-green-600 uppercase tracking-tight ml-1">
-                Uang Masuk
-              </label>
-              <div className={inputContainerClasses}>
-                <ArrowUpCircle size={18} className="absolute left-3 text-green-500 pointer-events-none" />
-                <input
-                  type="number"
-                  name="income"
-                  value={formData.income}
-                  onChange={handleChange}
-                  placeholder="0"
-                  className={`${baseInputClasses} pl-10 focus:ring-green-500/20 focus:border-green-500 border-green-100`}
-                />
-              </div>
-            </div>
-
-            <div className="space-y-1.5">
-              <label className="text-xs font-bold text-red-600 uppercase tracking-tight ml-1">
-                Uang Keluar
-              </label>
-              <div className={inputContainerClasses}>
-                <ArrowDownCircle size={18} className="absolute left-3 text-red-500 pointer-events-none" />
-                <input
-                  type="number"
-                  name="outcome"
-                  value={formData.outcome}
-                  onChange={handleChange}
-                  placeholder="0"
-                  className={`${baseInputClasses} pl-10 focus:ring-red-500/20 focus:border-red-500 border-red-100`}
-                />
-              </div>
-            </div>
-          </div>
-
-          <div className="flex gap-3 pt-2">
-            <button
-              type="submit"
-              className={`flex-1 ${editingTransaction ? 'bg-amber-500 hover:bg-amber-600' : 'bg-blue-600 hover:bg-blue-700'} text-white font-bold py-3 px-4 rounded-xl transition-all flex items-center justify-center gap-2 shadow-lg shadow-blue-500/10 active:scale-[0.98]`}
-            >
-              {editingTransaction ? <Save size={18} /> : <PlusCircle size={18} />}
-              {editingTransaction ? 'Simpan Perubahan' : 'Catat Transaksi'}
-            </button>
-            
-            {editingTransaction && (
-              <button
-                type="button"
-                onClick={onCancelEdit}
-                className="px-4 py-3 bg-slate-100 hover:bg-slate-200 text-slate-600 rounded-xl transition-all flex items-center gap-2 font-semibold active:scale-[0.98]"
-              >
-                <XCircle size={18} />
-                Batal
-              </button>
-            )}
-          </div>
-        </form>
+        </h2>
+        {editingTransaction && (
+          <button onClick={onCancelEdit} className="text-slate-400 hover:text-slate-600"><XCircle size={16}/></button>
+        )}
       </div>
       
-      {!editingTransaction && (
-        <div className="px-6 py-3 bg-blue-50/50 border-t border-blue-50">
-          <p className="text-[10px] text-blue-500 font-medium text-center">
-            Tips: Kosongkan salah satu kolom nilai jika tidak diperlukan.
-          </p>
+      <form onSubmit={handleSubmit} className="p-4 space-y-4">
+        <div className="grid grid-cols-1 gap-3">
+          <div className="relative">
+            <Calendar size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
+            <input
+              type="date"
+              name="date"
+              value={formData.date}
+              onChange={handleChange}
+              className={inputClasses}
+              required
+            />
+          </div>
+
+          <div className="relative">
+            <FileText size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
+            <input
+              type="text"
+              name="description"
+              value={formData.description}
+              onChange={handleChange}
+              placeholder="Keterangan (Contoh: Jual Ayam)"
+              className={inputClasses}
+              required
+            />
+          </div>
         </div>
-      )}
+
+        <div className="grid grid-cols-2 gap-2">
+          <div className="relative">
+            <ArrowUpCircle size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-green-500" />
+            <input
+              type="number"
+              name="income"
+              value={formData.income}
+              onChange={handleChange}
+              placeholder="Masuk"
+              className={`${inputClasses} border-green-100 focus:border-green-500`}
+            />
+          </div>
+          <div className="relative">
+            <ArrowDownCircle size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-red-500" />
+            <input
+              type="number"
+              name="outcome"
+              value={formData.outcome}
+              onChange={handleChange}
+              placeholder="Keluar"
+              className={`${inputClasses} border-red-100 focus:border-red-500`}
+            />
+          </div>
+        </div>
+
+        <button
+          type="submit"
+          className={`w-full py-2.5 rounded-xl font-bold text-white transition-all flex items-center justify-center gap-2 shadow-lg ${
+            editingTransaction 
+              ? 'bg-amber-500 hover:bg-amber-600 shadow-amber-500/20' 
+              : 'bg-blue-600 hover:bg-blue-700 shadow-blue-500/20'
+          } active:scale-[0.98] text-sm`}
+        >
+          {editingTransaction ? <Save size={16} /> : <PlusCircle size={16} />}
+          {editingTransaction ? 'Simpan Perubahan' : 'Catat Sekarang'}
+        </button>
+      </form>
     </div>
   );
 };
