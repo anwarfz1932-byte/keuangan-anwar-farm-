@@ -13,13 +13,21 @@ interface TransactionTableProps {
 }
 
 const TransactionTable: React.FC<TransactionTableProps> = ({ transactions, onEdit, onDelete, isSearching, isAdmin }) => {
-  const sortedTransactions = [...transactions].sort((a, b) => 
-    new Date(b.date).getTime() - new Date(a.date).getTime()
-  );
+  // Sorting untuk tampilan: Tanggal (Desc) -> CreatedAt (Desc)
+  // Ini memastikan transaksi terbaru secara input muncul di paling atas jika tanggalnya sama
+  const sortedTransactions = [...transactions].sort((a, b) => {
+    const dateDiff = new Date(b.date).getTime() - new Date(a.date).getTime();
+    if (dateDiff !== 0) return dateDiff;
+    return b.createdAt - a.createdAt;
+  });
 
-  const chronological = [...transactions].sort((a, b) => 
-    new Date(a.date).getTime() - new Date(b.date).getTime()
-  );
+  // Sorting untuk perhitungan Saldo: Tanggal (Asc) -> CreatedAt (Asc)
+  // Saldo harus dihitung sesuai urutan waktu kejadian yang sebenarnya
+  const chronological = [...transactions].sort((a, b) => {
+    const dateDiff = new Date(a.date).getTime() - new Date(b.date).getTime();
+    if (dateDiff !== 0) return dateDiff;
+    return a.createdAt - b.createdAt;
+  });
 
   let currentBalance = 0;
   const balancesMap: Record<string, number> = {};

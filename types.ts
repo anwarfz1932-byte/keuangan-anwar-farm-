@@ -5,6 +5,7 @@ export interface Transaction {
   description: string;
   income: number;
   outcome: number;
+  createdAt: number;
 }
 
-export type TransactionFormData = Omit<Transaction, 'id'>;
+export type TransactionFormData = Omit<Transaction, 'id' | 'createdAt'>;

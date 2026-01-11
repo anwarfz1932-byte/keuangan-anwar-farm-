@@ -60,8 +60,13 @@ const App: React.FC = () => {
       if (response.ok) {
         const data = await response.json();
         if (Array.isArray(data)) {
-          setTransactions(data);
-          localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+          // Migrasi data lama jika tidak punya createdAt
+          const migratedData = data.map((tx, index) => ({
+            ...tx,
+            createdAt: tx.createdAt || (Date.now() - (data.length - index) * 1000)
+          }));
+          setTransactions(migratedData);
+          localStorage.setItem(STORAGE_KEY, JSON.stringify(migratedData));
         }
       }
     } catch (error) {
@@ -96,7 +101,13 @@ const App: React.FC = () => {
     const savedTx = localStorage.getItem(STORAGE_KEY);
     if (savedTx) {
       try {
-        setTransactions(JSON.parse(savedTx));
+        const parsed = JSON.parse(savedTx);
+        // Migrasi data local
+        const migrated = parsed.map((tx: any, index: number) => ({
+          ...tx,
+          createdAt: tx.createdAt || (Date.now() - (parsed.length - index) * 1000)
+        }));
+        setTransactions(migrated);
       } catch (e) { console.error(e); }
     }
 
@@ -131,10 +142,16 @@ const App: React.FC = () => {
     if (!isAdmin) return;
     let updatedTransactions: Transaction[];
     if (editingTransaction) {
-      updatedTransactions = transactions.map(tx => tx.id === editingTransaction.id ? { ...tx, ...formData } : tx);
+      updatedTransactions = transactions.map(tx => 
+        tx.id === editingTransaction.id ? { ...tx, ...formData } : tx
+      );
       setEditingTransaction(null);
     } else {
-      updatedTransactions = [...transactions, { ...formData, id: crypto.randomUUID() }];
+      updatedTransactions = [...transactions, { 
+        ...formData, 
+        id: crypto.randomUUID(), 
+        createdAt: Date.now() 
+      }];
     }
     setTransactions(updatedTransactions);
     localStorage.setItem(STORAGE_KEY, JSON.stringify(updatedTransactions));
